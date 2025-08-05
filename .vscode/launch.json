@@ -5,7 +5,7 @@
       "name": "Debug OpenGL",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/Debug/cmake_project_example.exe",
+      "program": "${workspaceFolder}/build/Debug/OpenGLStudy.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
