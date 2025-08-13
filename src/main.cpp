@@ -1,6 +1,4 @@
-#include "common.h"
-#include "shader.h"
-#include "program.h"
+#include "context.h"
 
 #include <spdlog/spdlog.h>
 #include <glad/glad.h>
@@ -76,29 +74,28 @@ int main(int argc, const char** argv)
     auto glVersion = glGetString(GL_VERSION);
     SPDLOG_INFO("OpenGL context version: {}", reinterpret_cast<const char*>(glVersion));
 
-    ShaderPtr vertexShader = Shader::CreateFromFile("./shader/simple.vs", GL_VERTEX_SHADER);
-    ShaderPtr fragmentShader = Shader::CreateFromFile("./shader/simple.fs", GL_FRAGMENT_SHADER);
-    SPDLOG_INFO("vertex shader id: {}", vertexShader->Get());
-    SPDLOG_INFO("fragment shader id: {}", fragmentShader->Get());
-
-    ProgramUPtr program = Program::Create({fragmentShader, vertexShader});
-    SPDLOG_INFO("program id: {}", program->Get());
-
     OnFramebufferSizeChange(window, WINDOW_WIDTH, WINDOW_HEIGHT);
     // callback 등록
     glfwSetFramebufferSizeCallback(window, OnFramebufferSizeChange);
     glfwSetKeyCallback(window, OnKeyEvent);
 
-    glClearColor(0.0f, 0.1f, 0.2f, 0.0f);
+    auto context = Context::Create();
+    if (!context) 
+    {
+        SPDLOG_ERROR("failed to create context");
+        glfwTerminate();
+        return -1;
+    }
 
     // glfw 루프 실행, 윈도우 close 버튼을 누르면 정상 종료
     SPDLOG_INFO("Start main loop");
     while (!glfwWindowShouldClose(window)) {
-
-        glfwPollEvents();
-        glClear(GL_COLOR_BUFFER_BIT);
+        context->Render();
         glfwSwapBuffers(window);
+        glfwPollEvents();
     }
+
+    context.reset();
 
     glfwTerminate();
     return 0;
